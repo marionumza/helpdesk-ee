@@ -3,36 +3,61 @@
   <template id="team_rating_page" name="Customer Satisfaction (Public)">
     <t t-call="portal.portal_layout">
       <t t-set="no_breadcrumbs" t-value="True"/>
+
       <div class="container my-4">
         <h1 class="o_page_header p-4">Satisfacción de nuestros clientes</h1>
 
+        <!-- La plantilla se autoabastece: busca equipos y ratings sin depender del controlador -->
+        <t t-set="Team" t-value="request.env['helpdesk.team'].sudo()"/>
+        <t t-set="Rating" t-value="request.env['rating.rating'].sudo()"/>
+        <t t-set="teams" t-value="Team.search([])"/>
+
         <t t-if="teams">
-          <t t-foreach="teams" t-as="titem">
-            <t t-set="team" t-value="titem['team']"/>
-            <t t-set="ratings" t-value="titem['ratings']"/>
-            <t t-set="stats" t-value="titem['stats']"/>
+          <t t-foreach="teams" t-as="team">
+            <!-- Últimas 100 valoraciones del equipo -->
+            <t t-set="ratings"
+               t-value="Rating.search([
+                 ('consumed','=',True),
+                 ('res_model','=','helpdesk.ticket'),
+                 ('parent_ref','=', 'helpdesk.team,%d' % team.id)
+               ], order='create_date desc', limit=100)"/>
+
+            <!-- Fechas límite para métricas de 7/30/90 días (UTC) -->
+            <t t-set="since7"  t-value="(datetime.datetime.utcnow() - datetime.timedelta(days=7)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <t t-set="since30" t-value="(datetime.datetime.utcnow() - datetime.timedelta(days=30)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <t t-set="since90" t-value="(datetime.datetime.utcnow() - datetime.timedelta(days=90)).strftime('%Y-%m-%d %H:%M:%S')"/>
+
+            <t t-set="r7"  t-value="Rating.search([('consumed','=',True),('res_model','=','helpdesk.ticket'),('parent_ref','=', 'helpdesk.team,%d' % team.id),('create_date','&gt;', since7)])"/>
+            <t t-set="r30" t-value="Rating.search([('consumed','=',True),('res_model','=','helpdesk.ticket'),('parent_ref','=', 'helpdesk.team,%d' % team.id),('create_date','&gt;', since30)])"/>
+            <t t-set="r90" t-value="Rating.search([('consumed','=',True),('res_model','=','helpdesk.ticket'),('parent_ref','=', 'helpdesk.team,%d' % team.id),('create_date','&gt;', since90)])"/>
+
+            <t t-set="avg7"  t-value="round((sum([r.rating for r in r7 if r.rating])  / len(r7))  if len(r7)  else 0, 2)"/>
+            <t t-set="avg30" t-value="round((sum([r.rating for r in r30 if r.rating]) / len(r30)) if len(r30) else 0, 2)"/>
+            <t t-set="avg90" t-value="round((sum([r.rating for r in r90 if r.rating]) / len(r90)) if len(r90) else 0, 2)"/>
 
             <div class="oe_structure my-4 oe_website_rating_team">
               <h3 class="mb-3"><t t-esc="team.name"/></h3>
 
+              <!-- Métricas 7/30/90 días -->
               <div class="row">
                 <div class="col-md-4">
                   <h5>Últimos 7 días</h5>
-                  <p class="mb-1">Promedio: <t t-esc="stats.get(7, {}).get('avg', 0.0)"/> / 5</p>
-                  <small class="text-muted">Calificaciones: <t t-esc="stats.get(7, {}).get('count', 0)"/></small>
+                  <p class="mb-1">Promedio: <t t-esc="avg7"/> / 5</p>
+                  <small class="text-muted">Calificaciones: <t t-esc="len(r7)"/></small>
                 </div>
                 <div class="col-md-4">
                   <h5>Últimos 30 días</h5>
-                  <p class="mb-1">Promedio: <t t-esc="stats.get(30, {}).get('avg', 0.0)"/> / 5</p>
-                  <small class="text-muted">Calificaciones: <t t-esc="stats.get(30, {}).get('count', 0)"/></small>
+                  <p class="mb-1">Promedio: <t t-esc="avg30"/> / 5</p>
+                  <small class="text-muted">Calificaciones: <t t-esc="len(r30)"/></small>
                 </div>
                 <div class="col-md-4">
                   <h5>Últimos 3 meses</h5>
-                  <p class="mb-1">Promedio: <t t-esc="stats.get(90, {}).get('avg', 0.0)"/> / 5</p>
-                  <small class="text-muted">Calificaciones: <t t-esc="stats.get(90, {}).get('count', 0)"/></small>
+                  <p class="mb-1">Promedio: <t t-esc="avg90"/> / 5</p>
+                  <small class="text-muted">Calificaciones: <t t-esc="len(r90)"/></small>
                 </div>
               </div>
 
+              <!-- Últimas valoraciones -->
               <h5 class="o_page_header mt-4">Últimas calificaciones</h5>
               <t t-if="ratings">
                 <div class="d-flex flex-wrap gap-3 align-items-start">
@@ -53,7 +78,9 @@
             </div>
           </t>
         </t>
-        <t t-else=""><p>No hay equipos configurados.</p></t>
+        <t t-else="">
+          <p>No hay equipos configurados.</p>
+        </t>
       </div>
     </t>
   </template>

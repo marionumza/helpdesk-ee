@@ -7,7 +7,8 @@
     "depends": ["helpdesk", "website"],
     "data": [
         "views/helpdesk_rating_templates.xml",
-        "data/website_menu.xml",
+        #"data/website_menu.xml",
+        "data/website_page.xml",
     ],
     "license": "LGPL-3",
     "installable": True,

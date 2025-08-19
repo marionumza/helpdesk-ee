@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Página del Website publicada en /helpdesk/rating_public que renderiza la vista QWeb -->
+  <record id="website_helpdesk_rating_public_page" model="website.page">
+    <field name="name">Satisfacción de clientes</field>
+    <field name="url">/helpdesk/rating_public</field>
+    <field name="view_id" ref="helpdesk_website_ratings_public.team_rating_page"/>
+    <field name="is_published">True</field>
+  </record>
+</odoo>
