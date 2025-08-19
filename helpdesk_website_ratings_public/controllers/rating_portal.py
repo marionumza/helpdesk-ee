@@ -18,14 +18,12 @@ class HelpdeskWebsiteRatings(http.Controller):
 
         team_dicts = []
         for team in teams:
-            # Últimas 100 valoraciones del equipo
             ratings = Rating.search([
                 ('consumed', '=', True),
                 ('res_model', '=', 'helpdesk.ticket'),
                 ('parent_ref', '=', f'helpdesk.team,{team.id}'),
             ], order='create_date desc', limit=100)
 
-            # Métricas por ventana de tiempo
             stats = {}
             for d in durations:
                 since = fields.Datetime.to_string(datetime.utcnow() - timedelta(days=d))
@@ -45,6 +43,4 @@ class HelpdeskWebsiteRatings(http.Controller):
                 "stats": stats,
             })
 
-        values = {"teams": team_dicts}
-        return request.render('helpdesk_website_ratings_public.team_rating_page', values)
-
+        return request.render('helpdesk_website_ratings_public.team_rating_page', {"teams": team_dicts})

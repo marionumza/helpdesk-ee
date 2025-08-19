@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <!-- Página pública: usa valores provistos por el controlador -->
   <template id="team_rating_page" name="Customer Satisfaction (Public)">
     <t t-call="portal.portal_layout">
       <t t-set="no_breadcrumbs" t-value="True"/>
@@ -16,7 +15,6 @@
             <div class="oe_structure my-4 oe_website_rating_team">
               <h3 class="mb-3"><t t-esc="team.name"/></h3>
 
-              <!-- Métricas 7/30/90 días -->
               <div class="row">
                 <div class="col-md-4">
                   <h5>Últimos 7 días</h5>
@@ -35,7 +33,6 @@
                 </div>
               </div>
 
-              <!-- Últimas valoraciones -->
               <h5 class="o_page_header mt-4">Últimas calificaciones</h5>
               <t t-if="ratings">
                 <div class="d-flex flex-wrap gap-3 align-items-start">
