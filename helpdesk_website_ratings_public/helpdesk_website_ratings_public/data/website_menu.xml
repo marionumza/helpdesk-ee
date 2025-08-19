@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Menú del Website que apunta a la nueva ruta pública -->
+  <record id="menu_helpdesk_rating_public" model="website.menu">
+    <field name="name">Satisfacción clientes</field>
+    <field name="url">/helpdesk/rating_public</field>
+    <field name="parent_id" ref="website.main_menu"/>
+    <field name="is_mega_menu">False</field>
+  </record>
+</odoo>

@@ -1,80 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Página pública principal (equivalente a helpdesk.team_rating_page de v17) -->
-    <template id="team_rating_page" name="Customer Satisfaction (Public)">
-        <t t-call="portal.portal_layout">
-            <t t-set="no_breadcrumbs" t-value="True"/>
-            <div class="container my-4">
-                <h1 class="o_page_header p-4">Satisfacción de nuestros clientes</h1>
-                <t t-if="teams">
-                    <t t-foreach="teams" t-as="titem">
-                        <t t-set="team" t-value="titem['team']"/>
-                        <t t-set="ratings" t-value="titem['ratings']"/>
-                        <t t-set="stats" t-value="titem['stats']"/>
+  <!-- Página pública: usa valores provistos por el controlador -->
+  <template id="team_rating_page" name="Customer Satisfaction (Public)">
+    <t t-call="portal.portal_layout">
+      <t t-set="no_breadcrumbs" t-value="True"/>
+      <div class="container my-4">
+        <h1 class="o_page_header p-4">Satisfacción de nuestros clientes</h1>
 
-                        <div class="oe_structure my-4 oe_website_rating_team">
-                            <h3 class="mb-3"><t t-esc="team.name"/></h3>
+        <t t-if="teams">
+          <t t-foreach="teams" t-as="titem">
+            <t t-set="team" t-value="titem['team']"/>
+            <t t-set="ratings" t-value="titem['ratings']"/>
+            <t t-set="stats" t-value="titem['stats']"/>
 
-                            <!-- Bloques de métricas (7/30/90 días) -->
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <h5>Últimos 7 días</h5>
-                                    <p class="mb-1">
-                                        Promedio: <t t-esc="stats.get(7, {}).get('avg', 0.0)"/> / 5
-                                    </p>
-                                    <small class="text-muted">
-                                        Calificaciones: <t t-esc="stats.get(7, {}).get('count', 0)"/>
-                                    </small>
-                                </div>
-                                <div class="col-md-4">
-                                    <h5>Últimos 30 días</h5>
-                                    <p class="mb-1">
-                                        Promedio: <t t-esc="stats.get(30, {}).get('avg', 0.0)"/> / 5
-                                    </p>
-                                    <small class="text-muted">
-                                        Calificaciones: <t t-esc="stats.get(30, {}).get('count', 0)"/>
-                                    </small>
-                                </div>
-                                <div class="col-md-4">
-                                    <h5>Últimos 3 meses</h5>
-                                    <p class="mb-1">
-                                        Promedio: <t t-esc="stats.get(90, {}).get('avg', 0.0)"/> / 5
-                                    </p>
-                                    <small class="text-muted">
-                                        Calificaciones: <t t-esc="stats.get(90, {}).get('count', 0)"/>
-                                    </small>
-                                </div>
-                            </div>
+            <div class="oe_structure my-4 oe_website_rating_team">
+              <h3 class="mb-3"><t t-esc="team.name"/></h3>
 
-                            <!-- Listado simple de últimas valoraciones (puedes reemplazar por la parcial nativa) -->
-                            <h5 class="o_page_header mt-4">Últimas calificaciones</h5>
-                            <t t-if="ratings">
-                                <div class="d-flex flex-wrap gap-3 align-items-center">
-                                    <t t-foreach="ratings" t-as="rating">
-                                        <div class="border rounded p-2">
-                                            <img t-attf-src="/rating/static/src/img/rating_#{int(rating.rating or 0)}.png"
-                                                 t-att-alt="rating.res_name"
-                                                 t-attf-title="#{rating.res_name or ''}"/>
-                                            <div class="small text-muted mt-1">
-                                                <t t-esc="rating.create_date"/>
-                                            </div>
-                                            <div class="small">
-                                                <t t-esc="rating.feedback or ''"/>
-                                            </div>
-                                        </div>
-                                    </t>
-                                </div>
-                            </t>
-                            <t t-else="">
-                                <p>Todavía no hay calificaciones.</p>
-                            </t>
-                        </div>
-                    </t>
-                </t>
-                <t t-else="">
-                    <p>No hay equipos configurados.</p>
-                </t>
+              <!-- Métricas 7/30/90 días -->
+              <div class="row">
+                <div class="col-md-4">
+                  <h5>Últimos 7 días</h5>
+                  <p class="mb-1">Promedio: <t t-esc="stats.get(7, {}).get('avg', 0.0)"/> / 5</p>
+                  <small class="text-muted">Calificaciones: <t t-esc="stats.get(7, {}).get('count', 0)"/></small>
+                </div>
+                <div class="col-md-4">
+                  <h5>Últimos 30 días</h5>
+                  <p class="mb-1">Promedio: <t t-esc="stats.get(30, {}).get('avg', 0.0)"/> / 5</p>
+                  <small class="text-muted">Calificaciones: <t t-esc="stats.get(30, {}).get('count', 0)"/></small>
+                </div>
+                <div class="col-md-4">
+                  <h5>Últimos 3 meses</h5>
+                  <p class="mb-1">Promedio: <t t-esc="stats.get(90, {}).get('avg', 0.0)"/> / 5</p>
+                  <small class="text-muted">Calificaciones: <t t-esc="stats.get(90, {}).get('count', 0)"/></small>
+                </div>
+              </div>
+
+              <!-- Últimas valoraciones -->
+              <h5 class="o_page_header mt-4">Últimas calificaciones</h5>
+              <t t-if="ratings">
+                <div class="d-flex flex-wrap gap-3 align-items-start">
+                  <t t-foreach="ratings" t-as="rating">
+                    <div class="border rounded p-2">
+                      <img t-attf-src="/rating/static/src/img/rating_#{int(rating.rating or 0)}.png"
+                           t-att-alt="rating.res_name"
+                           t-attf-title="#{rating.res_name or ''}"/>
+                      <div class="small text-muted mt-1"><t t-esc="rating.create_date"/></div>
+                      <div class="small"><t t-esc="rating.feedback or ''"/></div>
+                    </div>
+                  </t>
+                </div>
+              </t>
+              <t t-else="">
+                <p>Todavía no hay calificaciones.</p>
+              </t>
             </div>
+          </t>
         </t>
-    </template>
+        <t t-else=""><p>No hay equipos configurados.</p></t>
+      </div>
+    </t>
+  </template>
 </odoo>
