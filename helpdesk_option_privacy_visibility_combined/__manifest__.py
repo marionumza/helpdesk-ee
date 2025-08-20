@@ -10,7 +10,7 @@
     "maintainers": ["crumges"],
     "website": "https://www.crumges.com",
     "category": "Services/Helpdesk",
-    "depends": ["helpdesk", "website_helpdesk_form"],
+    "depends": ["helpdesk"],
     "data": [],
     "assets": {},
     "application": False,
